@@ -1,0 +1,147 @@
+---
+title: "Facebook users"
+author: "waheeb Algabri"
+output:
+  pdf_document: default
+  html_document:
+    highlight: pygments
+    theme: cerulean
+    toc: yes
+    toc_float: yes
+  word_document:
+    toc: yes
+editor_options:
+  chunk_output_type: console
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(eval = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(openintro)
+```
+
+
+# Project Proposal
+
+Exploring Facebook Users by Country Dataset and also do Comparative Analysis of Facebook Usage in Saudi Arabia and Yemen
+
+# Introduction
+
+Social media platforms have become an essential part of our daily lives, and Facebook is one of the most popular ones. This project aims to explore the distribution of Facebook users across different countries and regions, using the Facebook Users by Country dataset.
+We also aim to conduct a comparative analysis of Facebook usage in Saudi Arabia and Yemen. The objective is to understand the differences in Facebook adoption, user numbers, and usage patterns between these two countries. By examining these variations, we can gain insights into the factors influencing Facebook usage and the digital landscape in these regions.
+
+
+```{r}
+library(tidyverse)
+library(ggplot2) 
+
+```
+
+Reading the data 
+
+```{r}
+data <- read.csv("data.csv")
+```
+
+```{r}
+glimpse(data)
+```
+```{r}
+str(data)
+```
+
+```{r}
+summary(data)
+```
+
+```{r}
+knitr::kable(head(data, 7))
+```
+
+
+```{r}
+# Identify countries with the highest and lowest Facebook users
+highest_users <- data %>% arrange(desc(Users)) %>% head(7)
+lowest_users <- data %>% arrange(Users) %>% head(7)
+
+knitr::kable(head(highest_users, 7))
+knitr::kable(head(lowest_users, 7))
+```
+
+
+ Let’s take a quick look at yemeni users
+```{r}
+# Filter the dataset for Yemen
+yemen_data <- data %>%
+  filter(Name == "Yemen")
+
+# Print the filtered data
+
+knitr::kable(yemen_data)
+```
+
+
+```{r}
+# Combine the filtered datasets for Yemen and the top 7 lowest countries
+combined_data <- rbind(yemen_data,lowest_users )
+
+# Convert the Users column to numeric
+combined_data$Users <- as.numeric(gsub("M", "", combined_data$Users))
+
+# Plot the comparison
+ggplot(combined_data, aes(x = reorder(Name, -Users), y = Users, fill = Name)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Comparison of Facebook Users - Yemen vs. Top 7 lowest Countries",
+       x = "Country", y = "Number of Users") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+So let’s take a quick look at saudi data which makes it easier for us to compare between users
+
+```{r}
+# Filter the dataset for Yemen and Saudi Arabia
+saudi_data <- data %>%
+  filter(Name %in% c("Saudi Arabia"))
+knitr::kable(saudi_data)
+```
+
+
+```{r}
+# Create a new dataset combining Yemen and Saudi Arabia data
+comparison_data <- rbind(yemen_data, saudi_data)
+
+# Convert the Users column to numeric
+comparison_data$Users <- as.numeric(gsub("M", "", comparison_data$Users))
+
+# Plot the comparison
+ggplot(comparison_data, aes(x = Name, y = Users, fill = Name)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Comparison of Facebook Users - Yemen vs. Saudi Arabia",
+       x = "Country", y = "Number of Users") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+From the data, we can observe the following:
+
+* Saudi Arabia has a significantly higher number of Facebook users compared to Yemen. Saudi Arabia has approximately 26.3 million users, while Yemen has around 3.3 million users.
+
+* In terms of Facebook user percentage, Saudi Arabia has a higher percentage (71.13%) compared to Yemen (9.7%). This indicates a larger proportion of the population in Saudi Arabia actively using Facebook compared to Yemen.
+
+* The data is from the same date, which allows for a fairer comparison between the two countries.
+
+
+
+# Conclusion 
+
+Based on the factors mentioned, the following conclusion can be drawn regarding the difference in Facebook usage between Saudi Arabia and Yemen:
+The variation in Facebook usage between Saudi Arabia and Yemen can be attributed to multiple factors. Firstly, Saudi Arabia has a higher rate of internet penetration compared to Yemen, enabling a larger population to access and utilize online platforms like Facebook. This can be attributed to the investments made in internet infrastructure in Saudi Arabia, resulting in better connectivity and accessibility.
+Secondly, the disparity in Facebook usage can be influenced by socioeconomic factors. Saudi Arabia's higher GDP per capita and stronger economy contribute to greater internet access, affordability of devices, and overall digital literacy. These factors create an environment that fosters higher Facebook usage among the population.
+Additionally, government policies and regulations play a role in shaping Facebook usage. Saudi Arabia has actively promoted digital transformation and social media usage through initiatives such as the Vision 2030 plan. This has led to improvements in internet connectivity and the establishment of incentives for businesses to establish an online presence, thereby contributing to higher Facebook usage rates.
+Lastly,cultural and social factors also come into play. Saudi Arabia has experienced rapid social and cultural changes, including increased openness to social media and digital platforms. Social media platforms like Facebook have gained popularity as a means of socializing, content sharing, and staying connected. In contrast, Yemen may have different cultural dynamics and societal norms that impact the adoption of social media.
+
+
+
+
+
